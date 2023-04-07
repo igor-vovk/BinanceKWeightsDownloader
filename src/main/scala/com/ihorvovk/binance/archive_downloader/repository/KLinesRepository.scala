@@ -5,8 +5,8 @@ import scalikejdbc._
 case class BinanceBatch(id: Option[Int],
                         symbol: String,
                         interval: String,
-                        year: String,
-                        month: String,
+                        year: Int,
+                        month: Int,
                         uploadComplete: Boolean = false)
 
 case class BinanceKLineRow(symbol: String,
@@ -27,13 +27,13 @@ object KLinesRepository {
       id = Some(rs.get[Int]("id")),
       symbol = rs.get[String]("symbol"),
       interval = rs.get[String]("interval"),
-      year = rs.get[String]("year"),
-      month = rs.get[String]("month"),
+      year = rs.get[Int]("year"),
+      month = rs.get[Int]("month"),
       uploadComplete = rs.get[Boolean]("upload_complete")
     )
   }
 
-  def findBatchBy(symbol: String, interval: String, year: String, month: String): Option[BinanceBatch] =
+  def findBatchBy(symbol: String, interval: String, year: Int, month: Int): Option[BinanceBatch] =
     DB autoCommit { implicit sesssion =>
       sql"""
            |SELECT *
