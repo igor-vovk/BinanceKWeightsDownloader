@@ -21,7 +21,7 @@ object Main extends IOApp.Simple {
       symbol <- Dependencies.conf.as[Seq[String]]("symbols")
       interval <- Seq("5m")
       date <- rangeInMonths(
-        from = LocalDate.parse(Dependencies.conf.as[String]("download_from_date")),
+        from = Dependencies.conf.as[LocalDate]("download_from_date"),
         until = LocalDate.now()
       )
     } yield BinanceBatch(None, symbol, interval, date.getYear, date.getMonthValue)
