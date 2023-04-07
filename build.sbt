@@ -11,6 +11,7 @@ lazy val root = (project in file("."))
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.4.2",
+  "com.iheart" %% "ficus" % "1.5.2",
 
   "mysql" % "mysql-connector-java" % "8.0.32",
   //  "org.xerial" % "sqlite-jdbc" % "3.40.1.0",

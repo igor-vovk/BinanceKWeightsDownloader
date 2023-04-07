@@ -11,16 +11,17 @@ import java.time.{LocalDate, Period}
 import java.util.zip.ZipInputStream
 import scala.io.Source
 import scala.jdk.CollectionConverters._
+import net.ceedubs.ficus.Ficus._
 
 object Main extends IOApp.Simple {
   private val log = LoggerFactory.getLogger(getClass)
 
   val run: IO[Unit] = {
     val batches = for {
-      symbol <- Dependencies.conf.getStringList("archive-downloader.symbols").asScala.toList
+      symbol <- Dependencies.conf.as[Seq[String]]("symbols")
       interval <- Seq("5m")
       date <- rangeInMonths(
-        from = LocalDate.parse(Dependencies.conf.getString("archive-downloader.download_from_date")),
+        from = LocalDate.parse(Dependencies.conf.as[String]("download_from_date")),
         until = LocalDate.now()
       )
     } yield BinanceBatch(None, symbol, interval, date.getYear, date.getMonthValue)

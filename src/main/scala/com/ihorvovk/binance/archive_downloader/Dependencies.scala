@@ -5,7 +5,7 @@ import scalikejdbc.config._
 
 object Dependencies {
 
-  val conf: Config = ConfigFactory.load()
+  val conf: Config = ConfigFactory.load().getConfig("archive-downloader")
 
   DBs.setupAll()
   sys.addShutdownHook {
