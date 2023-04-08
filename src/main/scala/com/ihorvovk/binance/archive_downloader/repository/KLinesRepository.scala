@@ -18,8 +18,7 @@ case class BinanceKLineRow(symbol: String,
                            volume: BigDecimal,
                            closeTime: Long,
                            numberOfTrades: Long,
-                           ignore: Boolean
-                          )
+                           ignore: Boolean)
 
 object KLinesRepository {
   private val binanceBatchMapper: WrappedResultSet => BinanceBatch = { rs =>
@@ -68,8 +67,17 @@ object KLinesRepository {
       val batchParams: Seq[Seq[Any]] = rows.map { row =>
         import row._
 
-        Seq(symbol, batchId, openTime, closeTime, openPrice, highPrice, lowPrice, closePrice,
-          volume, numberOfTrades, ignore)
+        Seq(symbol,
+            batchId,
+            openTime,
+            closeTime,
+            openPrice,
+            highPrice,
+            lowPrice,
+            closePrice,
+            volume,
+            numberOfTrades,
+            ignore)
       }
 
       sql"""
