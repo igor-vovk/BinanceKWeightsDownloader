@@ -24,7 +24,7 @@ object Dependencies {
   def binanceApiClient[F[_]: Async]: BinanceApiClient[F] = {
     new BinanceApiClient[F](
       client = client,
-      config = BinanceApiClientConfig(
+      config = BinanceApiClient.Config(
         datasetsBaseUrl = config.as[String]("binance.base_url")
       )
     )

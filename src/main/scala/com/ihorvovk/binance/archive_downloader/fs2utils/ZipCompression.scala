@@ -11,20 +11,20 @@ object ZipCompression {
 
   case class UnzipResult[F[_]](content: Stream[F, Byte], filename: String)
 
+  // Implementation supports unpacking only 1-file archives, which is ok for the purposes of this project
   def unzip[F[_]: Async](): Pipe[F, Byte, UnzipResult[F]] = { stream =>
     stream
       .through(toInputStream)
-      .flatMap(is => Stream.fromAutoCloseable(Async[F].delay(new ZipInputStream(is))))
-      .flatMap(Stream.unfold(_) { zis =>
-        Option(zis.getNextEntry).map { entry =>
-          val res = UnzipResult(
-            content = readInputStream[F](zis.pure[F].widen, 16, closeAfterUse = false),
-            filename = entry.getName
-          )
+      .map(is => new ZipInputStream(is))
+      .map { zis =>
+        val entry = zis.getNextEntry
+        val res = UnzipResult(
+          content = readInputStream[F](zis.pure[F].widen, 16 * 1024, closeAfterUse = true),
+          filename = entry.getName
+        )
 
-          (res, zis)
-        }
-      })
+        res
+      }
 
   }
 

@@ -41,7 +41,7 @@ object KLinesRepository {
            |SELECT *
            |FROM k_lines_batches
            |WHERE
-           |  symbol = $symbol AND
+           |  `symbol` = $symbol AND
            |  `interval` = $interval AND
            |  `year` = $year AND
            |  `month` = $month
