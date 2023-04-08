@@ -36,7 +36,7 @@ object KLinesRepository {
                   interval: String,
                   year: Int,
                   month: Int): Option[BinanceBatchRow] =
-    DB autoCommit { implicit sesssion =>
+    DB localTx { implicit sesssion =>
       sql"""
            |SELECT *
            |FROM k_lines_batches
@@ -49,7 +49,7 @@ object KLinesRepository {
     }
 
   def upsertBatch(batch: BinanceBatchRow): BinanceBatchRow = {
-    DB autoCommit { implicit session =>
+    DB localTx { implicit session =>
       import batch._
 
       sql"""

@@ -10,3 +10,6 @@ Database access as well as trading pairs to download are configured in `applicat
 
 If you just want to download trade data, there are read-made scripts here: https://github.com/binance/binance-public-data
 , I used them as a source.
+
+## TODO
+* Store archive checksums in the database and use them for verification 
