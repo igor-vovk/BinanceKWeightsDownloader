@@ -2,12 +2,12 @@ package com.ihorvovk.binance.archive_downloader.repository
 
 import scalikejdbc._
 
-case class BinanceBatch(id: Option[Int],
-                        symbol: String,
-                        interval: String,
-                        year: Int,
-                        month: Int,
-                        uploadComplete: Boolean = false)
+case class BinanceBatchRow(id: Option[Int],
+                           symbol: String,
+                           interval: String,
+                           year: Int,
+                           month: Int,
+                           uploadComplete: Boolean = false)
 
 case class BinanceKLineRow(symbol: String,
                            openTime: Long,
@@ -18,12 +18,11 @@ case class BinanceKLineRow(symbol: String,
                            volume: BigDecimal,
                            closeTime: Long,
                            numberOfTrades: Long,
-                           ignore: Boolean
-                          )
+                           ignore: Boolean)
 
 object KLinesRepository {
-  private val binanceBatchMapper: WrappedResultSet => BinanceBatch = { rs =>
-    BinanceBatch(
+  private val binanceBatchMapper: WrappedResultSet => BinanceBatchRow = { rs =>
+    BinanceBatchRow(
       id = Some(rs.get[Int]("id")),
       symbol = rs.get[String]("symbol"),
       interval = rs.get[String]("interval"),
@@ -33,8 +32,11 @@ object KLinesRepository {
     )
   }
 
-  def findBatchBy(symbol: String, interval: String, year: Int, month: Int): Option[BinanceBatch] =
-    DB autoCommit { implicit sesssion =>
+  def findBatchBy(symbol: String,
+                  interval: String,
+                  year: Int,
+                  month: Int): Option[BinanceBatchRow] =
+    DB localTx { implicit sesssion =>
       sql"""
            |SELECT *
            |FROM k_lines_batches
@@ -46,8 +48,8 @@ object KLinesRepository {
            |""".stripMargin.map(binanceBatchMapper).single.apply()
     }
 
-  def upsertBatch(batch: BinanceBatch): BinanceBatch = {
-    DB autoCommit { implicit session =>
+  def upsertBatch(batch: BinanceBatchRow): BinanceBatchRow = {
+    DB localTx { implicit session =>
       import batch._
 
       sql"""
@@ -68,8 +70,17 @@ object KLinesRepository {
       val batchParams: Seq[Seq[Any]] = rows.map { row =>
         import row._
 
-        Seq(symbol, batchId, openTime, closeTime, openPrice, highPrice, lowPrice, closePrice,
-          volume, numberOfTrades, ignore)
+        Seq(symbol,
+            batchId,
+            openTime,
+            closeTime,
+            openPrice,
+            highPrice,
+            lowPrice,
+            closePrice,
+            volume,
+            numberOfTrades,
+            ignore)
       }
 
       sql"""
