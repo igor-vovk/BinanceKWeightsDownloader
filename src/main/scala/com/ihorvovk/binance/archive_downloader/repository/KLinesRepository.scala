@@ -2,12 +2,12 @@ package com.ihorvovk.binance.archive_downloader.repository
 
 import scalikejdbc._
 
-case class BinanceBatch(id: Option[Int],
-                        symbol: String,
-                        interval: String,
-                        year: Int,
-                        month: Int,
-                        uploadComplete: Boolean = false)
+case class BinanceBatchRow(id: Option[Int],
+                           symbol: String,
+                           interval: String,
+                           year: Int,
+                           month: Int,
+                           uploadComplete: Boolean = false)
 
 case class BinanceKLineRow(symbol: String,
                            openTime: Long,
@@ -21,8 +21,8 @@ case class BinanceKLineRow(symbol: String,
                            ignore: Boolean)
 
 object KLinesRepository {
-  private val binanceBatchMapper: WrappedResultSet => BinanceBatch = { rs =>
-    BinanceBatch(
+  private val binanceBatchMapper: WrappedResultSet => BinanceBatchRow = { rs =>
+    BinanceBatchRow(
       id = Some(rs.get[Int]("id")),
       symbol = rs.get[String]("symbol"),
       interval = rs.get[String]("interval"),
@@ -32,7 +32,10 @@ object KLinesRepository {
     )
   }
 
-  def findBatchBy(symbol: String, interval: String, year: Int, month: Int): Option[BinanceBatch] =
+  def findBatchBy(symbol: String,
+                  interval: String,
+                  year: Int,
+                  month: Int): Option[BinanceBatchRow] =
     DB autoCommit { implicit sesssion =>
       sql"""
            |SELECT *
@@ -45,7 +48,7 @@ object KLinesRepository {
            |""".stripMargin.map(binanceBatchMapper).single.apply()
     }
 
-  def upsertBatch(batch: BinanceBatch): BinanceBatch = {
+  def upsertBatch(batch: BinanceBatchRow): BinanceBatchRow = {
     DB autoCommit { implicit session =>
       import batch._
 

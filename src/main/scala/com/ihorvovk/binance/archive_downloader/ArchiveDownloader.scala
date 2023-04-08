@@ -24,7 +24,7 @@ object ArchiveDownloader extends IOApp.Simple {
         from = Dependencies.conf.as[LocalDate]("download_from_date"),
         until = LocalDate.now()
       )
-    } yield BinanceBatch(None, symbol, interval, date.getYear, date.getMonthValue)
+    } yield BinanceBatchRow(None, symbol, interval, date.getYear, date.getMonthValue)
 
     batches.zipWithIndex
       .filterNot {
@@ -81,7 +81,7 @@ object ArchiveDownloader extends IOApp.Simple {
       }
   }
 
-  def mkBinanceArchiveUrl(batch: BinanceBatch): URL = {
+  def mkBinanceArchiveUrl(batch: BinanceBatchRow): URL = {
     import batch._
     val s = f"https://data.binance.vision/data/spot/monthly/klines" +
       f"/$symbol/$interval/$symbol-$interval-$year-$month%02d.zip"
